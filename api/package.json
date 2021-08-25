@@ -1,0 +1,20 @@
+{
+  "name": "apify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scraper": "node ./scraper.js",
+    "server": "node ./server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apify": "^2.0.4",
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "playwright": "^1.14.0",
+    "puppeteer": "^10.2.0"
+  }
+}

@@ -1,0 +1,52 @@
+import {
+	IExecuteFunctions,
+	IHookFunctions,
+} from 'n8n-core';
+
+import {
+	IDataObject, NodeApiError, NodeOperationError,
+} from 'n8n-workflow';
+
+/**
+ * Make an API request to Twilio
+ *
+ * @param {IHookFunctions} this
+ * @param {string} method
+ * @param {string} url
+ * @param {object} body
+ * @returns {Promise<any>}
+ */
+export async function moceanApiRequest(this: IHookFunctions | IExecuteFunctions, method: string, endpoint: string, body: IDataObject, query?: IDataObject): Promise<any> { // tslint:disable-line:no-any
+	const credentials = await this.getCredentials('moceanApi');
+	if (credentials === undefined) {
+		throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
+	}
+
+	if (query === undefined) {
+		query = {};
+	}
+
+	if (method === 'POST') {
+		body['mocean-api-key'] = credentials['mocean-api-key'];
+		body['mocean-api-secret'] = credentials['mocean-api-secret'];
+		body['mocean-resp-format'] = 'JSON';
+	} else if (method === 'GET') {
+		query['mocean-api-key'] = credentials['mocean-api-key'];
+		query['mocean-api-secret'] = credentials['mocean-api-secret'];
+		query['mocean-resp-format'] = 'JSON';
+	}
+
+	const options = {
+		method,
+		form: body,
+		qs: query,
+		uri: `https://rest.moceanapi.com${endpoint}`,
+		json: true,
+	};
+
+	try {
+		return await this.helpers.request(options);
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}

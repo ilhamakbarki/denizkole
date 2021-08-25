@@ -1,0 +1,42 @@
+version: "3"
+services:
+  api:
+    restart: always
+    image: node:14
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/var/www/app/api
+    working_dir: /var/www/app/api
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    command:
+      sh -c 'npm run && npm i && node server.js'
+  
+  n8n:
+    restart: always
+    ports:
+      - "5678:5678"
+    build:
+      context: ./n8n
+      dockerfile: Dockerfile
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=n8n_user
+      - N8N_BASIC_AUTH_PASSWORD=9Yj2S5AUCDqX4jDA
+      - N8N_HOST=example.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - EXECUTIONS_PROCESS=main
+      - EXECUTIONS_TIMEOUT=60
+      - EXECUTIONS_TIMEOUT_MAX=120
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - WEBHOOK_TUNNEL_URL=https://example.com/
+      - GENERIC_TIMEZONE=Asia/Jakarta
